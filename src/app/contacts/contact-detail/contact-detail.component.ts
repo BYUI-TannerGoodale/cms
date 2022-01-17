@@ -8,7 +8,8 @@ import { Contact } from '../contact.model';
 })
 export class ContactDetailComponent implements OnInit {
   //properties
-  contact: Contact = new Contact(1, "R. Kent Jackson", "jacksonk@byui.edu", "208-496-3771", "../../assets/images/jacksonk.jpg", null)
+  // contact: Contact = new Contact(1, "R. Kent Jackson", "jacksonk@byui.edu", "208-496-3771", "../../assets/images/jacksonk.jpg", null)
+  contact: Contact;
 
   constructor() { }
 
