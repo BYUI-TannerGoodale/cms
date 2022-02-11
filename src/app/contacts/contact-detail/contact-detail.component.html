@@ -9,8 +9,8 @@
                 <img [src]='contact.imageUrl' alt="{{ contact.name }}" class="image-responsive" style="max-height: 50px;">
             </span>
             <div class="col-xs-6">
-                <button class="btn btn-primary" type="button">Edit</button>
-                <button class="btn btn-danger" type="button">Delete</button>
+                <button class="btn btn-primary" type="button" [routerLink]="['edit']">Edit</button>
+                <button class="btn btn-danger" type="button" (click)="onDelete()">Delete</button>
             </div>
         </div>
       </div>

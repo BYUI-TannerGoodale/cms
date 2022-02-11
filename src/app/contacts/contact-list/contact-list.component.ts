@@ -1,6 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Contact } from '../contact.model';
-import { ContactService } from '../contact.service';
+import {Component, OnInit} from '@angular/core';
+import {Contact} from '../contact.model';
+import {ContactService} from '../contact.service';
 
 @Component({
   selector: 'cms-contact-list',
@@ -15,10 +15,12 @@ export class ContactListComponent implements OnInit {
 
   ngOnInit(): void {
     this.contacts = this.contactService.getContacts();
+    this.contactService.contactChangedEvent.subscribe(
+      (contacts: Contact[]) => {
+        this.contacts = contacts;
+      }
+    )
   }
   // Methods
-  onSelected(contact: Contact){
-    this.contactService.contactSelectedEvent.emit(contact);
-  }
 
 }
