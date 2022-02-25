@@ -62,8 +62,15 @@ export class ContactService {
 
   //Update
   updateContact(newContact: Contact, originalContact: Contact){
+    // console.log(newContact);
+    // console.log(originalContact);
     if (newContact == null || originalContact == null){return;}
+    //console.log(this.contacts);
     let pos = this.contacts.indexOf(originalContact);
+    if (pos < 0){
+      console.log('error in handling indexOf(originalContact), index is less than 0. Please check contact service, line 70. Index: ' + pos);
+      return;
+    }
     newContact.id = originalContact.id;
     this.contacts[pos] = newContact;
     this.contactListChangedSubject.next(this.contacts.slice());
