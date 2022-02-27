@@ -3,7 +3,6 @@ import {NgForm} from "@angular/forms";
 import {Contact} from "../contact.model";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ContactService} from "../contact.service";
-import {DragDropData} from "ng2-dnd";
 
 @Component({
   selector: 'cms-contact-edit',
@@ -83,14 +82,14 @@ export class ContactEditComponent implements OnInit {
     this.router.navigate(['/contacts'], {relativeTo: this.route});
   }
 
-  addToGroup($event: any) {
-    const selectedContact: Contact = $event.dragData;
-    const invalidGroupContact = this.isInvalidContact(selectedContact);
-    if (invalidGroupContact){
-      return;
-    }
-    this.groupContacts.push(selectedContact);
-  }
+  // addToGroup($event: any) {
+  //   const selectedContact: Contact = $event.dragData;
+  //   const invalidGroupContact = this.isInvalidContact(selectedContact);
+  //   if (invalidGroupContact){
+  //     return;
+  //   }
+  //   this.groupContacts.push(selectedContact);
+  // }
 
   onRemoveItem(index: number) {
     if (index < 0 || index >= this.groupContacts.length) {

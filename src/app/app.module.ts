@@ -20,7 +20,6 @@ import {RouterModule} from "@angular/router";
 import {AppRoutingModule} from "./app-routing.module";
 import { DocumentEditComponent } from './documents/document-edit/document-edit.component';
 import { ContactEditComponent } from './contacts/contact-edit/contact-edit.component';
-import {DndModule} from "ng2-dnd";
 
 @NgModule({
   declarations: [
@@ -45,8 +44,7 @@ import {DndModule} from "ng2-dnd";
     BrowserModule,
     FormsModule,
     RouterModule,
-    AppRoutingModule,
-    DndModule.forRoot()
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
