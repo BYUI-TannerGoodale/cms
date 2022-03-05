@@ -27,6 +27,8 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": false,
     "strictInputAccessModifiers": false,
-    "strictTemplates": false
+    "strictTemplates": false,
+    // I hate you. -Angular.
+    "allowSyntheticDefaultImports": true
   }
 }

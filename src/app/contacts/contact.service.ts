@@ -2,6 +2,8 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
 import {Subject} from "rxjs";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Document} from "../documents/document.model";
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +14,8 @@ export class ContactService {
   maxContactId: number;
 
   // Constructor(s)
-  constructor() {
-    this.contacts = MOCKCONTACTS;
+  constructor(private http : HttpClient) {
+    // this.contacts = MOCKCONTACTS;
     this.maxContactId = this.getMaxId();
   }
 
@@ -36,8 +38,44 @@ export class ContactService {
   }
 
   // Init contact list
-  getContacts(): Contact[]{
-    return this.contacts.slice();
+  getContacts() {
+    let contactList
+    return this.http.get('https://cmst-ac8c8-default-rtdb.firebaseio.com/contacts.json').subscribe(
+      (contacts: Contact[]) => {
+        this.contacts = contacts;
+        this.maxContactId = this.getMaxId();
+        contactList = this.contacts.sort((a,b) => this.compareinator(a,b)).slice();
+        this.contactListChangedSubject.next(contactList);
+      }, error => {
+        console.log(error);
+      }
+    )
+    // A bit hacky, but it solves for the bug...
+    return contactList;
+  }
+
+  storeContacts() {
+    let bufferContactList = JSON.stringify(this.contacts);
+    let headers = new HttpHeaders({"Content-Type" : "application/json"});
+    this.http.put("https://cmst-ac8c8-default-rtdb.firebaseio.com/contacts.json", bufferContactList, {headers}).subscribe(
+      (res) => {
+        let tempArr = this.contacts.slice();
+        this.contactListChangedSubject.next(tempArr);
+      }, error => {
+        console.log(error);
+      }
+    )
+  }
+
+  // Find out how to set "Contact" to generic of Object with name property. (Interface?)
+  compareinator(a: Contact, b: Contact):number{
+    if(a.name < b.name){
+      return -1
+    }
+    if(a.name > b.name){
+      return 1
+    }
+    return 0
   }
 
   // CRUD methods,
@@ -47,7 +85,7 @@ export class ContactService {
     this.maxContactId++;
     newContact.id = this.maxContactId.toString();
     this.contacts.push(newContact);
-    this.contactListChangedSubject.next(this.contacts.slice());
+    this.storeContacts();
   }
 
   // Read
@@ -73,7 +111,7 @@ export class ContactService {
     }
     newContact.id = originalContact.id;
     this.contacts[pos] = newContact;
-    this.contactListChangedSubject.next(this.contacts.slice());
+    this.storeContacts();
   }
 
   // Delete
@@ -86,6 +124,6 @@ export class ContactService {
       return;
     }
     this.contacts.splice(pos, 1);
-    this.contactListChangedSubject.next(this.contacts.slice());
+    this.storeContacts();
   }
 }

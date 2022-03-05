@@ -2,6 +2,11 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { Document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 import {Subject} from "rxjs";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {resolve} from "@angular/compiler-cli";
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +17,7 @@ export class DocumentService {
   maxDocumentId: number;
 
   // Constructor(s)
-  constructor() {
+  constructor(private http : HttpClient) {
     this.documents = MOCKDOCUMENTS;
     this.maxDocumentId = this.getMaxId();
   }
@@ -37,8 +42,59 @@ export class DocumentService {
   }
 
   // Init list
-  getDocuments(){
-    return this.documents.slice();
+  // getDocuments() {
+  //   return this.http.get('https://cmst-ac8c8-default-rtdb.firebaseio.com/documents',
+  //     {
+  //       responseType: 'json'
+  //     }).subscribe(res => {
+  //     (documents: Document[]) => {
+  //       this.documents = documents;
+  //       this.maxDocumentId = this.getMaxId();
+  //       let documentList = this.documents.sort().slice();
+  //       this.documentListChangedEvent.next(documentList);
+  //     }
+  //   }, error => {
+  //       console.log(error);
+  //   })
+  // }
+  documentCompare(documentA: Document, documentB: Document):number{
+    if(documentA.name < documentB.name){
+      return -1
+    }
+    if(documentA.name > documentB.name){
+      return 1
+    }
+    return 0
+  }
+
+  getDocuments() {
+    let documentList
+    return this.http.get('https://cmst-ac8c8-default-rtdb.firebaseio.com/documents.json').subscribe(
+      (documents: Document[]) => {
+        this.documents = documents;
+        this.maxDocumentId = this.getMaxId();
+        documentList = this.documents.sort((a,b) => this.documentCompare(a,b)).slice();
+        this.documentListChangedEvent.next(documentList);
+      }, error => {
+        console.log(error);
+      }
+    )
+    return documentList;
+  }
+
+  storeDocuments() {
+    let bufferContactList = JSON.stringify(this.documents);
+    let headers = new HttpHeaders({"Content-Type" : "application/json"});
+    this.http.put("https://cmst-ac8c8-default-rtdb.firebaseio.com/documents.json", bufferContactList, {headers}).subscribe(
+      (res) => {
+        let tempDocArr = this.documents.slice();
+        let respo = res.toString();
+        console.log(respo);
+        this.documentListChangedEvent.next(tempDocArr);
+      }, error => {
+        console.log(error);
+      }
+    )
   }
 
   // CRUD methods,
@@ -55,8 +111,8 @@ export class DocumentService {
     // Push the new document onto the documents array
     this.documents.push(newDoc);
     // Create a clone of the documents array and emit it to subscribed objects
-    let docListClone = this.documents.slice();
-    this.documentListChangedEvent.next(docListClone);
+    // let docListClone = this.documents.slice();
+    this.storeDocuments();
   }
 
   // Read
@@ -80,8 +136,9 @@ export class DocumentService {
     }
     newDocument.id = originalDocument.id;
     this.documents[position] = newDocument;
-    let documentsListClone = this.documents.slice();
-    this.documentListChangedEvent.next(documentsListClone);
+    // let documentsListClone = this.documents.slice();
+    // this.documentListChangedEvent.next(documentsListClone);
+    this.storeDocuments();
   }
 
   // Delete
@@ -94,6 +151,7 @@ export class DocumentService {
       return;
     }
     this.documents.splice(pos, 1);
-    this.documentListChangedEvent.next(this.documents.slice());
+    // this.documentListChangedEvent.next(this.documents.slice());
+    this.storeDocuments();
   }
 }

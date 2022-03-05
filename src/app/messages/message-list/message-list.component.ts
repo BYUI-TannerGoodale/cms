@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Message } from '../message.model';
 import { MessageService } from '../message.service';
+import {Document} from "../../documents/document.model";
 
 @Component({
   selector: 'cms-message-list',
@@ -15,9 +16,9 @@ export class MessageListComponent implements OnInit {
 
   ngOnInit(): void {
     this.messages = this.messageService.getMessages();
-    this.messageService.messageChangedEvent.subscribe(
-      (messages: Message[]) => {
-        this.messages = messages;
+    this.messageService.messageListChangedEvent.subscribe(
+      (messageList: Message[]) => {
+        this.messages = messageList;
       }
     )
   }
